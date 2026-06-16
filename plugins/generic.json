@@ -1,0 +1,57 @@
+[
+  {
+    "id": "dns-fakeip-guard",
+    "name": "DNS FakeIP Guard",
+    "version": "v0.1.0",
+    "group": "Network",
+    "description": "启用通用 Fake-IP DNS、reverse_mapping 和 FakeIP 网段代理路由，防止 DNS 解析结果把业务连接锁定到不可用地址。",
+    "tags": ["DNS", "FakeIP", "sing-box"],
+    "type": "Http",
+    "url": "https://raw.githubusercontent.com/hanger-source/GUI.for.SingBox-Plugin-Hub/main/plugins/Generic/dns-fakeip-guard.js",
+    "path": "data/plugins/dns-fakeip-guard.js",
+    "triggers": ["on::generate"],
+    "hasUI": false,
+    "menus": {},
+    "context": {
+      "profiles": {},
+      "subscriptions": {},
+      "rulesets": {},
+      "plugins": {},
+      "scheduledtasks": {}
+    },
+    "status": 0,
+    "configuration": [
+      {
+        "id": "fakeip-v4-range",
+        "title": "FakeIP IPv4 Range",
+        "description": "FakeIP 使用的 IPv4 保留网段；通常保持默认。",
+        "key": "fakeIPV4Range",
+        "component": "Input",
+        "value": "198.18.0.0/15",
+        "options": []
+      },
+      {
+        "id": "fakeip-v6-range",
+        "title": "FakeIP IPv6 Range",
+        "description": "FakeIP 使用的 IPv6 网段；通常保持默认。",
+        "key": "fakeIPV6Range",
+        "component": "Input",
+        "value": "fc00::/18",
+        "options": []
+      },
+      {
+        "id": "blocked-cidrs",
+        "title": "Blocked CIDRs",
+        "description": "可选：需要在 FakeIP 之外额外拦截的 CIDR；每行一个。",
+        "key": "blockedCIDRs",
+        "component": "InputList",
+        "value": [],
+        "options": []
+      }
+    ],
+    "disabled": false,
+    "install": false,
+    "installed": false
+  }
+]
+
