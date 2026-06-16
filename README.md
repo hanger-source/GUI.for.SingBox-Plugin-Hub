@@ -13,4 +13,3 @@ https://raw.githubusercontent.com/hanger-source/GUI.for.SingBox-Plugin-Hub/main/
 ## Plugins
 
 - `dns-fakeip-guard`: generic FakeIP DNS guard for sing-box profiles.
-
