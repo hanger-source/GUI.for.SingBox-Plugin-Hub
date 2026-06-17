@@ -2,7 +2,7 @@
   {
     "id": "plugin-dns-fakeip-guard",
     "name": "DNS FakeIP Guard",
-    "version": "v1.1.0",
+    "version": "v2.0.0",
     "group": "Network",
     "description": "启用通用 Fake-IP DNS、reverse_mapping、FakeIP 网段代理路由和 Bootstrap-DNS，防止业务 DNS 污染以及节点域名解析自举失败。",
     "tags": ["DNS", "FakeIP", "Bootstrap", "sing-box"],
