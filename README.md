@@ -16,23 +16,30 @@ https://raw.githubusercontent.com/hanger-source/GUI.for.SingBox-Plugin-Hub/main/
 
 ### `dns-fakeip-guard`
 
-This plugin protects two separate DNS paths:
+This plugin protects the FakeIP DNS path:
 
-- FakeIP path for ordinary target domains, with `reverse_mapping` and FakeIP
+- FakeIP path for domains requested by apps, with `reverse_mapping` and FakeIP
   CIDR routing.
-- Bootstrap DNS path for proxy node server domains, via `Bootstrap-DNS` and
-  `route.default_domain_resolver.server`.
 
-The bootstrap path is intentionally independent from `🚀 Select` / `🎈 Auto`.
-Those outbounds require node domains to be resolved before they can connect, so
-using them to resolve node domains can create a startup loop.
+This plugin currently does not inject Bootstrap DNS. Proxy node server domains
+are still resolved by the current profile's `route.default_domain_resolver`.
+That resolver is the path sing-box uses when it dials outbound node `server`
+domains.
 
-Default bootstrap settings:
+Seeing a proxy node domain resolve to FakeIP from macOS tools only proves an app
+query went through the TUN DNS path. It does not prove sing-box used FakeIP to
+dial the node. The node dialing path is controlled by
+`route.default_domain_resolver.server`.
 
-```text
-tag: Bootstrap-DNS
-type: udp
-server: 8.8.8.8
-port: 53
-detour: empty, meaning direct
+FakeIP ranges must not conflict with ranges already captured by another TUN or
+proxy core. A quick macOS check is:
+
+```bash
+route -n get 100.64.0.1
+route -n get 198.18.0.16
 ```
+
+Before GUI TUN starts, the selected FakeIP range should not already point to
+another `utun`. After GUI TUN starts, connections to the selected FakeIP range
+must enter GUI.for.SingBox's sing-box TUN; otherwise `reverse_mapping` cannot
+recover the original domain.

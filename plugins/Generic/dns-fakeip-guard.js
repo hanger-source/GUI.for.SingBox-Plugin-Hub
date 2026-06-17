@@ -1,10 +1,5 @@
-const DefaultFakeIPV4Range = '198.18.0.0/15'
+const DefaultFakeIPV4Range = '100.64.0.0/10'
 const DefaultFakeIPV6Range = 'fc00::/18'
-const DefaultBootstrapDNSTag = 'Bootstrap-DNS'
-const DefaultBootstrapDNSType = 'udp'
-const DefaultBootstrapDNSServer = '8.8.8.8'
-const DefaultBootstrapDNSPort = '53'
-const DangerousBootstrapDetours = ['🚀 Select', '🎈 Auto', 'GLOBAL', '🐟 Fallback']
 const PrivateDomainSuffixes = [
   'local',
   'localhost',
@@ -33,10 +28,6 @@ const configBool = (value, fallback) => {
   if (typeof value === 'boolean') return value
   if (value === undefined || value === null || value === '') return fallback
   return !['0', 'false', 'no', 'off'].includes(String(value).trim().toLowerCase())
-}
-const configPort = (value, fallback) => {
-  const port = Number(configString(value, fallback))
-  return Number.isFinite(port) && port > 0 ? port : Number(fallback)
 }
 
 const uniqRules = (rules) => {
@@ -104,38 +95,6 @@ const ensureFakeIPServer = (config, fakeIPV4Range, fakeIPV6Range) => {
   return 'Fake-IP'
 }
 
-const ensureBootstrapDNSServer = (config, options) => {
-  config.dns ||= {}
-  config.dns.servers ||= []
-
-  const tag = configString(options.tag, DefaultBootstrapDNSTag)
-  const type = configString(options.type, DefaultBootstrapDNSType)
-  const server = configString(options.server, DefaultBootstrapDNSServer)
-  const serverPort = configPort(options.port, DefaultBootstrapDNSPort)
-  const path = String(options.path || '').trim()
-  const requestedDetour = String(options.detour || '').trim()
-  const detour = DangerousBootstrapDetours.includes(requestedDetour) ? '' : requestedDetour
-
-  const next = {
-    tag,
-    type,
-    server,
-    server_port: serverPort
-  }
-  if (path) next.path = path
-  if (detour) next.detour = detour
-
-  const existing = config.dns.servers.find((dnsServer) => dnsServer?.tag === tag)
-  if (existing) {
-    Object.keys(existing).forEach((key) => delete existing[key])
-    Object.assign(existing, next)
-    return tag
-  }
-
-  config.dns.servers.push(next)
-  return tag
-}
-
 const insertAfterDNSHijack = (rules, inserts) => {
   const index = rules.findIndex((rule) => rule?.action === 'hijack-dns' || rule?.protocol === 'dns')
   if (index === -1) return [...inserts, ...rules]
@@ -156,29 +115,12 @@ const onGenerate = async (config, profile) => {
   const outbound = hasTag(config.outbounds, '🚀 Select') ? '🚀 Select' : config.route.final
   const block = hasTag(config.outbounds, '🛑 Block') ? '🛑 Block' : 'block'
   const blockedCIDRs = configList(Plugin.blockedCIDRs)
-  const enableBootstrapDNS = configBool(Plugin.enableBootstrapDNS, true)
-  const forceBootstrapDomainResolver = configBool(Plugin.forceBootstrapDomainResolver, true)
   const disableDNSCache = configBool(Plugin.disableDNSCache, true)
-  const bootstrapDNSTag = enableBootstrapDNS
-    ? ensureBootstrapDNSServer(config, {
-        tag: Plugin.bootstrapDNSTag,
-        type: Plugin.bootstrapDNSType,
-        server: Plugin.bootstrapDNSServer,
-        port: Plugin.bootstrapDNSPort,
-        path: Plugin.bootstrapDNSPath,
-        detour: Plugin.bootstrapDNSDetour
-      })
-    : ''
 
   config.dns.independent_cache = true
   config.dns.reverse_mapping = true
   if (disableDNSCache) {
     config.dns.disable_cache = true
-  }
-  if (enableBootstrapDNS && forceBootstrapDomainResolver) {
-    config.route.default_domain_resolver = {
-      server: bootstrapDNSTag
-    }
   }
 
   const dnsPrivateRule = {

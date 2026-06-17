@@ -2,10 +2,10 @@
   {
     "id": "plugin-dns-fakeip-guard",
     "name": "DNS FakeIP Guard",
-    "version": "v2.0.0",
+    "version": "v3.0.0",
     "group": "Network",
-    "description": "启用通用 Fake-IP DNS、reverse_mapping、FakeIP 网段代理路由和 Bootstrap-DNS，防止业务 DNS 污染以及节点域名解析自举失败。",
-    "tags": ["DNS", "FakeIP", "Bootstrap", "sing-box"],
+    "description": "启用通用 Fake-IP DNS、reverse_mapping 和 FakeIP 网段代理路由，避免普通目标域名解析污染；代理节点域名解析仍由当前 profile 的 default_domain_resolver 决定。",
+    "tags": ["DNS", "FakeIP", "sing-box"],
     "type": "Http",
     "url": "https://raw.githubusercontent.com/hanger-source/GUI.for.SingBox-Plugin-Hub/main/plugins/Generic/dns-fakeip-guard.js",
     "path": "data/plugins/dns-fakeip-guard.js",
@@ -24,16 +24,16 @@
       {
         "id": "fakeip-v4-range",
         "title": "FakeIP IPv4 Range",
-        "description": "FakeIP 使用的 IPv4 保留网段；通常保持默认。",
+        "description": "FakeIP 使用的 IPv4 网段；必须避开其他 TUN/代理内核已占用的网段。",
         "key": "fakeIPV4Range",
         "component": "Input",
-        "value": "198.18.0.0/15",
+        "value": "100.64.0.0/10",
         "options": []
       },
       {
         "id": "fakeip-v6-range",
         "title": "FakeIP IPv6 Range",
-        "description": "FakeIP 使用的 IPv6 网段；通常保持默认。",
+        "description": "FakeIP 使用的 IPv6 网段；必须避开其他 TUN/代理内核已占用的网段。通常保持默认。",
         "key": "fakeIPV6Range",
         "component": "Input",
         "value": "fc00::/18",
@@ -49,84 +49,12 @@
         "options": []
       },
       {
-        "id": "enable-bootstrap-dns",
-        "title": "Enable Bootstrap DNS",
-        "description": "启用专门用于解析代理节点域名的 Bootstrap-DNS。",
-        "key": "enableBootstrapDNS",
-        "component": "Switch",
-        "value": true,
-        "options": []
-      },
-      {
-        "id": "force-bootstrap-domain-resolver",
-        "title": "Use Bootstrap DNS For Node Domains",
-        "description": "强制把“解析节点域名的 DNS 服务器”设置为 Bootstrap-DNS，避免 Local-DNS 污染和 Remote-DNS->选择器套娃。",
-        "key": "forceBootstrapDomainResolver",
-        "component": "Switch",
-        "value": true,
-        "options": []
-      },
-      {
         "id": "disable-dns-cache",
         "title": "Disable DNS Cache",
         "description": "禁用 sing-box DNS 缓存，避免污染结果长时间残留；稳定后可按需关闭。",
         "key": "disableDNSCache",
         "component": "Switch",
         "value": true,
-        "options": []
-      },
-      {
-        "id": "bootstrap-dns-tag",
-        "title": "Bootstrap DNS Tag",
-        "description": "Bootstrap DNS 的 tag；默认 Bootstrap-DNS。",
-        "key": "bootstrapDNSTag",
-        "component": "Input",
-        "value": "Bootstrap-DNS",
-        "options": []
-      },
-      {
-        "id": "bootstrap-dns-type",
-        "title": "Bootstrap DNS Type",
-        "description": "Bootstrap DNS 类型；默认 udp。",
-        "key": "bootstrapDNSType",
-        "component": "Input",
-        "value": "udp",
-        "options": []
-      },
-      {
-        "id": "bootstrap-dns-server",
-        "title": "Bootstrap DNS Server",
-        "description": "Bootstrap DNS 服务器地址；默认 8.8.8.8。",
-        "key": "bootstrapDNSServer",
-        "component": "Input",
-        "value": "8.8.8.8",
-        "options": []
-      },
-      {
-        "id": "bootstrap-dns-port",
-        "title": "Bootstrap DNS Port",
-        "description": "Bootstrap DNS 端口；默认 53。",
-        "key": "bootstrapDNSPort",
-        "component": "Input",
-        "value": "53",
-        "options": []
-      },
-      {
-        "id": "bootstrap-dns-path",
-        "title": "Bootstrap DNS Path",
-        "description": "DoH/H3 类型才需要填写，例如 /dns-query；UDP/TCP/TLS 留空。",
-        "key": "bootstrapDNSPath",
-        "component": "Input",
-        "value": "",
-        "options": []
-      },
-      {
-        "id": "bootstrap-dns-detour",
-        "title": "Bootstrap DNS Detour",
-        "description": "可选：用于 Bootstrap DNS 的稳定出站 tag；留空表示直连。插件会忽略 🚀 Select/🎈 Auto/GLOBAL/🐟 Fallback，避免自举套娃。",
-        "key": "bootstrapDNSDetour",
-        "component": "Input",
-        "value": "",
         "options": []
       }
     ],
