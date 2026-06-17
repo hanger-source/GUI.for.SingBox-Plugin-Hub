@@ -1,4 +1,4 @@
-const DefaultFakeIPV4Range = '100.64.0.0/10'
+const DefaultFakeIPV4Range = '198.18.0.0/15'
 const DefaultFakeIPV6Range = 'fc00::/18'
 const PrivateDomainSuffixes = [
   'local',

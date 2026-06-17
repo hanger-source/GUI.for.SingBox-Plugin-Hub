@@ -2,9 +2,9 @@
   {
     "id": "plugin-dns-fakeip-guard",
     "name": "DNS FakeIP Guard",
-    "version": "v3.0.0",
+    "version": "v4.3.0",
     "group": "Network",
-    "description": "启用通用 Fake-IP DNS、reverse_mapping 和 FakeIP 网段代理路由，避免普通目标域名解析污染；代理节点域名解析仍由当前 profile 的 default_domain_resolver 决定。",
+    "description": "启用通用 Fake-IP DNS、reverse_mapping 和 FakeIP 网段代理路由。配置变更需要重新生成配置并重启核心后生效；代理节点域名解析仍由当前 profile 的 default_domain_resolver 决定。",
     "tags": ["DNS", "FakeIP", "sing-box"],
     "type": "Http",
     "url": "https://raw.githubusercontent.com/hanger-source/GUI.for.SingBox-Plugin-Hub/main/plugins/Generic/dns-fakeip-guard.js",
@@ -24,16 +24,16 @@
       {
         "id": "fakeip-v4-range",
         "title": "FakeIP IPv4 Range",
-        "description": "FakeIP 使用的 IPv4 网段；必须避开其他 TUN/代理内核已占用的网段。",
+        "description": "FakeIP 使用的 IPv4 网段。默认 198.18.0.0/15；变更后需要重新生成配置并重启核心，必要时再清理 macOS/浏览器 DNS 缓存。",
         "key": "fakeIPV4Range",
         "component": "Input",
-        "value": "100.64.0.0/10",
+        "value": "198.18.0.0/15",
         "options": []
       },
       {
         "id": "fakeip-v6-range",
         "title": "FakeIP IPv6 Range",
-        "description": "FakeIP 使用的 IPv6 网段；必须避开其他 TUN/代理内核已占用的网段。通常保持默认。",
+        "description": "FakeIP 使用的 IPv6 网段。默认 fc00::/18；变更后需要重新生成配置并重启核心，必要时再清理 macOS/浏览器 DNS 缓存。",
         "key": "fakeIPV6Range",
         "component": "Input",
         "value": "fc00::/18",
@@ -42,7 +42,7 @@
       {
         "id": "blocked-cidrs",
         "title": "Blocked CIDRs",
-        "description": "可选：需要在 FakeIP 之外额外拦截的 CIDR；每行一个。",
+        "description": "可选：需要在 FakeIP 之外额外拦截的 CIDR，每行一个。变更后需要重新生成配置并重启核心。",
         "key": "blockedCIDRs",
         "component": "InputList",
         "value": [],
@@ -51,7 +51,7 @@
       {
         "id": "disable-dns-cache",
         "title": "Disable DNS Cache",
-        "description": "禁用 sing-box DNS 缓存，避免污染结果长时间残留；稳定后可按需关闭。",
+        "description": "禁用 sing-box DNS 缓存，减少旧解析结果残留。变更后需要重新生成配置并重启核心；这不会清理 macOS 或浏览器已有缓存。",
         "key": "disableDNSCache",
         "component": "Switch",
         "value": true,
