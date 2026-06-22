@@ -50,6 +50,12 @@ const isFakeIPRouteRule = (rule, fakeIPRanges) =>
 const isConfiguredBlockRule = (rule, blockedCIDRs) =>
   hasAnyCIDR(rule, blockedCIDRs) && ['🛑 Block', 'block'].includes(rule?.outbound)
 
+const hasAnyDomain = (rule, domains) =>
+  (rule?.domain_suffix || []).some((d) => domains.includes(d))
+
+const isConfiguredDomainBlockRule = (rule, blockedDomains) =>
+  hasAnyDomain(rule, blockedDomains) && ['🛑 Block', 'block'].includes(rule?.outbound)
+
 const isManagedBlockNeighbor = (rules, index, fakeIPRanges) => {
   const rule = rules[index]
   const nextRule = rules[index + 1]
@@ -63,11 +69,12 @@ const isManagedBlockNeighbor = (rules, index, fakeIPRanges) => {
 
 const removeManagedDNSRules = (rules) => (rules || []).filter((rule) => !isManagedDNSRule(rule))
 
-const removeManagedRouteRules = (rules, blockedCIDRs, fakeIPRanges) =>
+const removeManagedRouteRules = (rules, blockedCIDRs, blockedDomains, fakeIPRanges) =>
   (rules || []).filter(
     (rule, index, allRules) =>
       !isFakeIPRouteRule(rule, fakeIPRanges) &&
       !isConfiguredBlockRule(rule, blockedCIDRs) &&
+      !isConfiguredDomainBlockRule(rule, blockedDomains) &&
       !isManagedBlockNeighbor(allRules, index, fakeIPRanges)
   )
 
@@ -115,6 +122,7 @@ const onGenerate = async (config, profile) => {
   const outbound = hasTag(config.outbounds, '🚀 Select') ? '🚀 Select' : config.route.final
   const block = hasTag(config.outbounds, '🛑 Block') ? '🛑 Block' : 'block'
   const blockedCIDRs = configList(Plugin.blockedCIDRs)
+  const blockedDomains = configList(Plugin.blockedDomains)
   const disableDNSCache = configBool(Plugin.disableDNSCache, true)
 
   config.dns.independent_cache = true
@@ -156,8 +164,17 @@ const onGenerate = async (config, profile) => {
   ])
   config.route.rules = uniqRules(
     insertAfterDNSHijack(
-      removeManagedRouteRules(config.route.rules, blockedCIDRs, uniq([...previousFakeIPRanges, ...fakeIPRanges])),
+      removeManagedRouteRules(config.route.rules, blockedCIDRs, blockedDomains, uniq([...previousFakeIPRanges, ...fakeIPRanges])),
       [
+        ...(blockedDomains.length
+          ? [
+              {
+                domain_suffix: blockedDomains,
+                outbound: block,
+                action: 'route'
+              }
+            ]
+          : []),
         ...(blockedCIDRs.length
           ? [
               {

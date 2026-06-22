@@ -2,7 +2,7 @@
   {
     "id": "plugin-dns-fakeip-guard",
     "name": "DNS FakeIP Guard",
-    "version": "v4.3.0",
+    "version": "v5.0.0",
     "group": "Network",
     "description": "启用通用 Fake-IP DNS、reverse_mapping 和 FakeIP 网段代理路由。配置变更需要重新生成配置并重启核心后生效；代理节点域名解析仍由当前 profile 的 default_domain_resolver 决定。",
     "tags": ["DNS", "FakeIP", "sing-box"],
@@ -44,6 +44,15 @@
         "title": "Blocked CIDRs",
         "description": "可选：需要在 FakeIP 之外额外拦截的 CIDR，每行一个。变更后需要重新生成配置并重启核心。",
         "key": "blockedCIDRs",
+        "component": "InputList",
+        "value": [],
+        "options": []
+      },
+      {
+        "id": "blocked-domains",
+        "title": "Blocked Domains",
+        "description": "可选：需要拦截的域名后缀，每行一个。匹配的连接会被直接 block，不经过 TUN 和 direct outbound。变更后需要重新生成配置并重启核心。",
+        "key": "blockedDomains",
         "component": "InputList",
         "value": [],
         "options": []
